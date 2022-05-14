@@ -23,13 +23,9 @@ export class Home extends React.Component <any, any> {
         then(data => {
             newData = data.map(this.formatData);
             console.log(data.map(this.formatData));
-            // newData = data;
-            // console.log(newData);
         }).catch(err => console.log(err));
         this.setState(newData);
         console.log(`length of state = ${this.state.length}`);
-        // console.log(`length of data = ${newData}`);
-        // return newData;
     }
 
     // Format the response of getWarning to data.Warning type
@@ -47,13 +43,10 @@ export class Home extends React.Component <any, any> {
     constructor(props: any) {
         super(props);
         this.getWarning = this.getWarning.bind(this);
-        this.state = [];
-        // this.state = this.getWarning();
+        this.state = fetch('/api/warnings').then(response => response.json()).then(data => {
+            return data.map(this.formatData)
+            }).catch(err => console.log(err));
     }
-
-    // componentDidMount() {
-    //     this.setState(this.getWarning());
-    // }
 
     render() {
         if (this.state.length > 0) {
@@ -101,7 +94,6 @@ export class Home extends React.Component <any, any> {
                     </form>
                 </div>
             );
-            }
         }
+    }
 }
-

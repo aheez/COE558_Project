@@ -15,7 +15,7 @@ export class CarDriverAllocation extends React.Component <any, any> {
         fname: "John",
         lname: "Doe",
         govID: 123456789,
-        id: 1,
+        Id: 1,
         phone: 1234567890,
         age: 30,
         address: "123 Main St",

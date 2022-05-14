@@ -2,13 +2,13 @@ import * as React from 'react';
 import * as data from './DataTypes';
 import * as styles from './Styles';
 
-export class DriverInfo extends React.Component <any, data.Driver> {
+export class DriverInfo extends React.Component <any, any> {
 
     defaultDriver: data.Driver = {
             fname: "",
             lname: "",
             govID: 0,
-            id: 0,
+            Id: 0,
             phone: 0,
             age: 0,
             address: "",
@@ -35,16 +35,24 @@ export class DriverInfo extends React.Component <any, data.Driver> {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({
+            params: {
                 id: req_id
-            })
+            }
         };
 
-        fetch('/api/drivers', request).then(res => res.json()).then(data => {
-            this.setState(data);
+        fetch('/api/drivers/id', request).
+        then(res => {
+            console.log(res.json());
+            res.json();
+        }).
+        then(data => {
+            console.log(data);
+            if (data == null) {
+                this.setState(this.defaultDriver);
+            } else {
+                this.setState(data);
+            }
         }).catch(err => console.log(err));
-
-        // console.log(`Driver ID: ${event.target.id.value}`);
     }
 
     render() {

@@ -16,7 +16,7 @@ export class RegisterDriver extends React.Component <any, any> {
             fname: event.target.fname.value,
             lname: event.target.lname.value,
             govID: event.target.govID.value,
-            id: event.target.id.value,
+            Id: event.target.id.value,
             phone: event.target.phone.value,
             age: event.target.age.value,
             address: event.target.address.value,

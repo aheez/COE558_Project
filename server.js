@@ -2,6 +2,7 @@ const path = require('path');
 const express = require('express');
 const { urlencoded } = require('express');
 const mongoose = require('mongoose');
+const { useCallback } = require('react');
 // import * as schema from './schemas.mjs';
 // const schema = require('./schemas.js');
 
@@ -93,14 +94,6 @@ const DriverSchema = new mongoose.Schema({
     }
 });
 
-const CustomerSchema = new mongoose.Schema({
-    fname   : String,
-    lname   : String,
-    address : String,
-    email   : String,
-    phone   : Number
-});
-
 const CarSchema = new mongoose.Schema({
     licensePlate : {
         type    : String,
@@ -133,17 +126,30 @@ const PackageSchema = new mongoose.Schema({
         unique : true,
         required : true
     },
-    customerPhone: {
-        type : String,
-        required: true
+    customer: {
+        fname : {
+            type: String,
+            required : true
+        },
+        lname : {
+            type: String,
+            required : true
+        },
+        phone : {
+            type: Number,
+            length:10,
+            required : true
+        }
     },
-    location_x : {
-        type : Number,
-        required: true
-    },
-    location_y : {
-        type : Number,
-        required: true
+    location: {
+        x: {
+            type: Number,
+            required : true
+        },
+        y: {
+            type: Number,
+            required : true
+        }
     },
     packageStatus : {
         type : String,
@@ -227,7 +233,6 @@ const WarningSchema = new mongoose.Schema({
 
 // init collections
 const Driver = mongoose.model('Driver', DriverSchema);
-const Customer = mongoose.model('Customer', CustomerSchema);
 const Car = mongoose.model('Car', CarSchema);
 const Package = mongoose.model('Package', PackageSchema);
 const DriverCar = mongoose.model('DriverCar', DriverCarSchema);
@@ -270,8 +275,6 @@ app.get('/api/warnings', (req, res) => {
         if (err) {
             res.status(500).send(err);
         } else {
-            // res.send(data);
-            // console.log(data);
             res.send(response = data.map(warning => {
                 return {
                     severity : warning.severity,
@@ -298,15 +301,25 @@ app.post('/api/warnings', (req, res) => {
     });
 });
 
-// get all drivers
+// get drivers
 app.get('/api/drivers', (req, res) => {
-    Driver.find({}, (err, data) => {
-        if (err) {
-            res.status(500).send(err);
-        } else {
-            res.send(data);
-        }
-    });
+    if (req.body.id) {
+        Driver.findOne({Id: req.body.id}, (err, data) => {
+            if (err) {
+                res.status(500).send(err);
+            } else {
+                res.send(data);
+            }
+        });
+    } else {
+        Driver.find({}, (err, data) => {
+            if (err) {
+                res.status(500).send(err);
+            } else {
+                res.send(data);
+            }
+        });
+    }
 });
 
 // register DriverCar
@@ -393,38 +406,21 @@ app.get('/api/cars', (req, res) => {
     });
 });
 
-// register customer
-app.post('/api/customers', (req, res) => {
-    let customer = new Customer({
-        fname : req.body.fname,
-        lname : req.body.lname,
-        address : req.body.address,
-        phone : req.body.phone,
-        email : req.body.email
-    });
-    customer.save((err, data) => {
-        if (err) {
-            res.status(500).send(err);
-        } else {
-            res.json({'message': 'Customer registered'});
-        }
-    });
-});
-
-
-//link packages to customer id
+// register package
 app.post('/api/packages', (req, res) => {
-    let pkg = new Package({
+    let package = new Package({
         id : req.body.id,
-        customerPhone : req.body.customerPhone,
         location_x : req.body.location_x,
         location_y : req.body.location_y,
+        customer : {
+            fname : req.body.fname,
+            lname : req.body.lname,
+            phone : req.body.phone
+        },
         priority : req.body.priority,
-        deliveryDate : req.body.deliveryDate,
-        packageStatus: req.body.status
+        packageStatus : req.body.status
     });
-    console.log(pkg);
-    pkg.save((err, data) => {
+    package.save((err, data) => {
         if (err) {
             res.status(500).send(err);
         } else {
@@ -432,7 +428,6 @@ app.post('/api/packages', (req, res) => {
         }
     });
 });
-
 
 // get all packages
 app.get('/api/packages', (req, res) => {
@@ -442,49 +437,6 @@ app.get('/api/packages', (req, res) => {
         } else {
             res.send(data);
         }
-    });
-});
-
-// get a single customer by phone number
-app.get('/api/customers', (req, res) => {
-    Customer.findOne({phone: parseInt(req.body.phone)}, (err, data) => {
-        if (err) {
-            res.status(500).send(err);
-        } else {
-            res.send(data);
-        }
-    });
-});
-
-// sync function get customer 
-function getCustomer_idByPhone(phone) {
-    cust_id = Customer.findOne({phone: phone})
-    Customer.findOne({phone: parseInt(phone)}, (err, data) => {
-        if (err) {
-            console.log(err);
-        } else {
-            return data._id;
-        }
-    });
-}
-
-// function getCustomer_idByPhone (phone)  {
-//     return new Promise((resolve, reject) => {
-//         Customer.findOne({phone: parseInt(phone)}, (err, data) => {
-//             if (err) {
-//                 reject(err);
-//             } else {
-//                 resolve(data);
-//             }
-//         });
-//     });
-// }
-
-app.get('/api/test', (req, res) => {
-    getCustomer_idByPhone(req.body.phone).then((data) => {
-        res.send(data);
-    }).catch((err) => {
-        res.send(err);
     });
 });
 
@@ -547,89 +499,109 @@ app.post('/api/drivercar', (req, res) => {
     });
 });
 
-// request route
-// check if driver is in the database
-// if not return error
-// check if car is in the database
-// if not return error
-// set package status to 'In Transit' and delivery date to current date
-// arrange packages by priority
-// set driver work status to 'On Duty'
-// save the route
-// return packages (id, location_x, location_y, deliveryDate)
-
-app.get('/api/request-route', (req, res) => {
-    driver = Driver.findOne({Id : req.body.driverId});
-    car = Car.findOne({licensePlate : req.body.carLicensePlate});
-
-    packages = req.body.packagesId.map((id) => {
-        return Package.findOne({id : id})
-    });
-    if (driver == null) {
-        res.status(500).send('Driver not found');
-    } else if (car == null) {
-        res.status(500).send('Car not found');
-    } else {
-        packages.foreach((id) => {
-            fetch(`http://localhost:3000/api/packages/`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    id: id,
-                    status: 'In Transit',
-                    deliveryDate: new Date()
-                })
-            });
-        });
-        fetch(`http://localhost:3000/api/drivers/`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                id: driver.Id,
-                status: 'On Duty'
-            })
-        });
-        fetch(`http://localhost:3000/api/cars/`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                licensePlate: car.licensePlate,
-                status: 'Available'
-            })
-        });
-        res.send(packages);
-    }
-
-    // arrange packages by priority highest to lowest
-    packages.sort((a, b) => {
-        return priority2value[b.priority] - priority2value[a.priority];
-    });
-
-    // response data is the x, y coordinates of the packages
-    responseData = packages.map((id) => {
-        return {
-            x: packages[id].location_x,
-            y: packages[id].location_y
-        };
-    });
-    console.log(responseData);
-    let route = new Route({
-        driver: driver.Id,
-        car: car.licensePlate,
-        packages: responseData
-    });
-    console.log(route);
-    route.save((err, data) => {
+// find array of packages by arry of package ids
+app.get('/api/packages/:ids', (req, res) => {
+    Package.find({_id : {$in : req.params.ids}}, (err, data) => {
         if (err) {
             res.status(500).send(err);
+        } else {
+            res.send(data);
+        }
+    });
+});
+
+// get driver by id
+app.get('/api/drivers/id', (req, res) => {
+    Driver.findOne({Id : req.params.id}, (err, data) => {
+        if (err) {
+            res.status(500).send(err);
+        } else  {
+            res.send(data);
+        }
+    });
+});
+
+// request route
+app.get('/api/request-route', (req, res) => {
+    driver = Driver.findOne({Id : req.body.driverId}, function (err, data) { 
+    // driver = Driver.findOne({},)
+        if (err || data == null) {
+            res.status(500).send(err);
+        } else {
+            return data;
         }});
-    res.send(responseData);
+    car = Car.findOne({licensePlate : req.body.carLicensePlate}, function (err, data) {
+        if (err || data == null) {
+            res.status(500).send(err);
+        } else {
+            return data;
+        }});
+    packages = req.body.packagesId;
+
+    console.log(packages);
+    console.log(driver);
+    console.log(car);
+
+    res.status(200).send(driver);
+
+    // packages.foreach((id) => {
+    //     fetch(`http://localhost:3000/api/packages/`, {
+    //         method: 'PUT',
+    //         headers: {
+    //             'Content-Type': 'application/json'
+    //         },
+    //         body: JSON.stringify({
+    //             id: id,
+    //             status: 'In Transit',
+    //             deliveryDate: new Date()
+    //         })
+    //     });
+    // });
+    // fetch(`http://localhost:3000/api/drivers/`, {
+    //     method: 'PUT',
+    //     headers: {
+    //         'Content-Type': 'application/json'
+    //     },
+    //     body: JSON.stringify({
+    //         id: driver.Id,
+    //         status: 'On Duty'
+    //     })
+    // });
+    // fetch(`http://localhost:3000/api/cars/`, {
+    //     method: 'PUT',
+    //     headers: {
+    //         'Content-Type': 'application/json'
+    //     },
+    //     body: JSON.stringify({
+    //         licensePlate: car.licensePlate,
+    //         status: 'Available'
+    //     })
+    // });
+
+    // // arrange packages by priority highest to lowest
+    // packages.sort((a, b) => {
+    //     return priority2value[b.priority] - priority2value[a.priority];
+    // });
+
+    // // response data is the x, y coordinates of the packages
+    // responseData = packages.map((id) => {
+    //     return {
+    //         x: packages[id].location.x,
+    //         y: packages[id].location.y
+    //     };
+    // });
+    // console.log(responseData);
+    // let route = new Route({
+    //     driver: driver,
+    //     car: car,
+    //     packages: responseData
+    // });
+    // console.log(route);
+    // route.save((err, data) => {
+    //     if (err) {
+    //         res.status(500).send(err);
+    //     }});
+    // res.send(responseData);
 });
 
 priority2value = {

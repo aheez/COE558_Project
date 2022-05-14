@@ -2,7 +2,7 @@ export type Driver = {
     fname: string;
     lname: string;
     govID: number;
-    id: number;
+    Id: number;
     phone: number;
     age: number;
     address: string;

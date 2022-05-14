@@ -9,7 +9,7 @@ export class DriversProfiles extends React.Component <any, data.Driver []> {
         fname: "John",
         lname: "Doe",
         govID: 123456789,
-        id: 0,
+        Id: 0,
         phone: 1234567890,
         age: 0,
         address: "123 Main St",
@@ -61,7 +61,7 @@ export class DriversProfiles extends React.Component <any, data.Driver []> {
                         <tbody>
                             {this.state.map((driver: data.Driver, index) => {
                                 return (
-                                    <tr key={driver.id} style={styles.trStyles}>
+                                    <tr key={driver.Id} style={styles.trStyles}>
                                         <td>{driver.fname}</td>
                                         <td>{driver.lname}</td>
                                         <td>{driver.score}</td>

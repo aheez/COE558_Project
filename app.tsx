@@ -12,7 +12,6 @@ import { RegisterDriver } from './components/register-driver';
 import { DriversProfiles } from './components/drivers-profiles';
 import { Packages } from './components/packages';
 import { DriverInfo } from './components/driver-info';
-import { RegisterCustomer } from './components/register-customer';
 import { RegisterPackage } from './components/register-package';
 
 
@@ -31,7 +30,6 @@ class App extends React.Component {
                         <li><Link to="/driver-info">Driver Info</Link></li>
                         <li><Link to="/register-driver">Register Driver</Link></li>
                         <li><Link to="/register-car">Register Car</Link></li>
-                        <li><Link to="/register-customer">Register Customer</Link></li>
                         <li><Link to="/register-package">Register Package</Link></li>
                     </ul>
                     <Route exact path="/" component={Home} />
@@ -42,7 +40,6 @@ class App extends React.Component {
                     <Route path="/driver-info" component={DriverInfo} />
                     <Route path="/register-driver" component={RegisterDriver} />
                     <Route path="/register-car" component={RegisterCar} />
-                    <Route path="/register-customer" component={RegisterCustomer} />
                     <Route path="/register-package" component={RegisterPackage} />
                 </div>
             </HashRouter>
