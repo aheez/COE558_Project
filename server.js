@@ -561,14 +561,9 @@ app.post('/api/drivercar', (req, res) => {
 app.get('/api/request-route', (req, res) => {
     driver = Driver.findOne({Id : req.body.driverId});
     car = Car.findOne({licensePlate : req.body.carLicensePlate});
-    packages = req.body.packagesId.foreach((id) => {
-        Package.findOne({id : id}, (err, data) => {
-            if (err) {
-                res.status(500).send(err);
-            } else {
-                res.send(data);
-            }
-        });
+
+    packages = req.body.packagesId.map((id) => {
+        return Package.findOne({id : id})
     });
     if (driver == null) {
         res.status(500).send('Driver not found');
