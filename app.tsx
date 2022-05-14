@@ -6,64 +6,107 @@ import * as styles from './styles';
 import * as data from './DataTypes';
 
 // Homepage
-class Home extends React.Component <any, data.Warning []> {
+class Home extends React.Component <any, any> {
 
     defaultWarning : data.Warning = {
         severity: data.WarningSeverity.low,
         message: "This is a default warning message",
         date: "01/01/2018"
     }
+
     getWarning() {
         let newData : data.Warning [];
         let request = {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
-            },
-            body : ''
+            }
         }
         fetch('/api/warnings', request).
         then(response => response.json()).
         then(data => {
-            newData = data;
+            newData = data.map(this.formatData);
+            console.log(data.map(this.formatData));
+            // newData = data;
+            // console.log(newData);
         }).catch(err => console.log(err));
+        this.setState(newData);
+        console.log(`length of state = ${this.state.length}`);
+        // console.log(`length of data = ${newData}`);
+        // return newData;
     }
+
+    // Format the response of getWarning to data.Warning type
+    formatData(wdata: any) {
+        let newData: data.Warning;
+        newData = {
+            severity: data.convertWarnToEnum(wdata.severity),
+            message: wdata.message,
+            date: wdata.date
+        }
+        return newData;
+    }
+    
     
     constructor(props: any) {
         super(props);
         this.getWarning = this.getWarning.bind(this);
-        this.state = [this.defaultWarning];
+        this.state = [];
         // this.state = this.getWarning();
     }
 
+    // componentDidMount() {
+    //     this.setState(this.getWarning());
+    // }
+
     render() {
-        return (
-            <div>
-                <h1 style={styles.h1Styles}>Home</h1>
-                <h2 style={styles.h2Styles}>Warnings</h2>
-                <table style={styles.tableStyles}>
-                    <thead>
-                        <tr style={styles.trStyles}>
-                            <th>Severity</th>
-                            <th>Message</th>
-                            <th>Date</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {this.state.map((warning: data.Warning, index: number) => {
-                            return (
-                                <tr style={styles.trStyles} key={index}>
-                                    <td>{warning.severity}</td>
-                                    <td>{warning.message}</td>
-                                    <td>{warning.date}</td>
-                                </tr>
-                            )
-                        })}
-                    </tbody>
-                </table>
-            </div>
-        );
-    }
+        if (this.state.length > 0) {
+            return (
+                <div>
+                    <h1 style={styles.h1Styles}>Home</h1>
+                    <h2 style={styles.h2Styles}>Warnings</h2>
+                    <h2 style={styles.h2Styles}>{this.state[0].message}</h2>
+                    <table style={styles.tableStyles}>
+                        <thead>
+                            <tr style={styles.trStyles}>
+                                <th>Severity</th>
+                                <th>Message</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {this.state.map((warning: data.Warning) => {
+                                return (
+                                    <tr style={styles.trStyles}>
+                                        <td>{warning.severity}</td>
+                                        <td>{warning.message}</td>
+                                        <td>{warning.date}</td>
+                                    </tr>
+                                )
+                            }
+                            )}
+                        </tbody>
+                    </table>
+                    <form style={styles.formStyle}>
+                        <button style={styles.buttonStyles} onClick={this.getWarning}>Get Warnings</button>
+                    </form>
+                </div>
+            );
+        } 
+        else {
+            console.log(this.state.length)
+            return (
+                <div>
+                    <h1 style={styles.h1Styles}>Home</h1>
+                    <h2 style={styles.h2Styles}>Warnings</h2>
+                    <p style={styles.pStyles}>No warnings found</p>
+                    <form style={styles.formStyle}>
+                        <button style={styles.buttonStyles} onClick={this.getWarning}>Get Warnings</button>
+                    </form>
+                </div>
+            );
+            }
+        }
 }
 
 // Car-Driver Allocation Page
@@ -74,7 +117,7 @@ class CarDriverAllocation extends React.Component <any, any> {
         make: "Toyota",
         model: "Corolla",
         year: 2019,
-        status: data.CarStatus.Available
+        status: data.CarStatus.available
     };
     defaultDriver: data.Driver = {
         fname: "John",
@@ -181,7 +224,7 @@ class Cars extends React.Component <any, data.Car []> {
         make: "Toyota",
         model: "Corolla",
         year: 0,
-        status: data.CarStatus.Available
+        status: data.CarStatus.available
     }
     constructor(props) {
         super(props);
@@ -404,6 +447,111 @@ class Packages extends React.Component <any, data.Package[]> {
     }
 }
 
+// register driver page
+class RegisterDriver extends React.Component <any, any> {
+
+    constructor(props) {
+        super(props);
+        this.state = {}
+        this.handleSubmit = this.handleSubmit.bind(this);
+    }
+
+    handleSubmit(event) {
+        event.preventDefault();
+        let driver: data.Driver = {
+            fname: event.target.fname.value,
+            lname: event.target.lname.value,
+            govID: event.target.govID.value,
+            id: event.target.id.value,
+            phone: event.target.phone.value,
+            age: event.target.age.value,
+            address: event.target.address.value,
+            email: event.target.email.value,
+            licenseStatus: data.LicenseStatus.valid,
+            startingDate: new Date().toISOString().substring(0, 10),
+            endDate: new Date().toISOString().substring(0, 10),
+            score: event.target.score.value,
+            workStatus: data.WorkStatus.OnDuty
+        }
+        let request = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(driver)
+        }
+        fetch('/api/drivers', request).then(res => res.json()).then(data => {
+            console.log(data);
+        }).catch(err => console.log(err));
+    }
+
+
+    render () {
+        return (
+            <div>
+                <h1 style={styles.h1Styles}>Register Driver</h1>
+                <form style={styles.formStyle} onSubmit={this.handleSubmit} >
+                    <div>
+                        <label>First Name</label>
+                        <input type="text" name="fname" placeholder="John" />
+                    </div>
+                    <div>
+                        <label>Last Name</label>
+                        <input type="text" name="lname" placeholder="Doe" />
+                    </div>
+                    <div>
+                        <label>Government ID</label>
+                        <input type="text" name="govID" placeholder="123456789" />
+                    </div>
+                    <div>
+                        <label>ID</label>
+                        <input type="text" name="id" placeholder="123456789" />
+                    </div>
+                    <div>
+                        <label>Phone Number</label>
+                        <input type="text" name="phone" placeholder="1234567890" />
+                    </div>
+                    <div>
+                        <label>Age</label>
+                        <input type="text" name="age" placeholder="20" />
+                    </div>
+                    <div>
+                        <label>Address</label>
+                        <input type="text" name="address" placeholder="123 Main St" />
+                    </div>
+                    <div>
+                        <label>Email</label>
+                        <input type="text" name="email" placeholder="" />
+                    </div>
+                    <div>
+                        <label>License Status</label>
+                        <select name="licenseStatus">
+                            <option value="data.LicenseStatus.valid">Valid</option>
+                            <option value="data.LicenseStatus.invalid">Invalid</option>
+                            <option value="data.LicenseStatus.pending">Pending</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Work Status</label>
+                        <select name="workStatus">
+                            <option value="data.WorkStatus.OnDuty">On Duty</option>
+                            <option value="data.WorkStatus.OffDuty">Off Duty</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Score</label>
+                        <input type="text" name="score" placeholder="0" />
+                    </div>
+                    <div>
+                        <input type="submit" value="Register" />
+                    </div>
+                </form>
+            </div>
+        );
+    }
+}
+    
+
 // Driver Info Page
 class DriverInfo extends React.Component <any, data.Driver> {
 
@@ -526,6 +674,217 @@ class DriverInfo extends React.Component <any, data.Driver> {
     }
 }
 
+// register car page
+class RegisterCar extends React.Component <any, any> {
+    
+    constructor(props: any) {
+        super(props);
+        this.state = {}
+        this.registerCar = this.registerCar.bind(this);
+    }
+
+    registerCar(event) {
+        event.preventDefault();
+        let car : data.Car = {
+            licensePlate: event.target.licensePlate.value,
+            make: event.target.make.value,
+            model: event.target.model.value,
+            year: event.target.year.value,
+            status: data.CarStatus.available
+        }
+
+        let request = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(car)
+        };
+
+        console.log(request);
+
+        fetch('/api/cars', request).then(res => res.json()).then(data => {
+            console.log(data);
+        }).catch(err => console.log(err));
+    }
+
+    render() {
+        return (
+            <div>
+                <h1 style={styles.h1Styles}>Register Car</h1>
+                <form onSubmit={this.registerCar} style={styles.formStyle}>
+                    <div>
+                        <label>License Plate:</label>
+                        <input type="text" name="licensePlate" />
+                    </div>
+                    <div>
+                        <label>Make:</label>
+                        <input type="text" name="make" />
+                    </div>
+                    <div>
+                        <label>Model:</label>
+                        <input type="text" name="model" />
+                    </div>
+                    <div>
+                        <label>Year:</label>
+                        <input type="text" name="year" />
+                    </div>
+                    <div>
+                        <input type="submit" value="Register" />
+                    </div>
+                </form>
+            </div>
+        );
+    }
+}
+
+// register customer page
+class RegisterCustomer extends React.Component <any, any> {
+    
+    constructor(props: any) {
+        super(props);
+        this.state = {}
+        this.registerCustomer = this.registerCustomer.bind(this);
+    }
+
+    registerCustomer(event) {
+        event.preventDefault();
+        let customer : data.Customer = {
+            fname: event.target.fname.value,
+            lname: event.target.lname.value,
+            phone: event.target.phone.value,
+            address: event.target.address.value,
+            email: event.target.email.value
+        }
+
+        let request = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(customer)
+        };
+
+        console.log(request);
+
+        fetch('/api/customers', request).then(res => res.json()).then(data => {
+            console.log(data);
+        }).catch(err => console.log(err));
+    }
+
+    render() {
+        return (
+            <div>
+                <h1 style={styles.h1Styles}>Register Customer</h1>
+                <form onSubmit={this.registerCustomer} style={styles.formStyle}>
+                    <div>
+                        <label>First Name:</label>
+                        <input type="text" name="fname" />
+                    </div>
+                    <div>
+                        <label>Last Name:</label>
+                        <input type="text" name="lname" />
+                    </div>
+                    <div>
+                        <label>Phone:</label>
+                        <input type="text" name="phone" />
+                    </div>
+                    <div>
+                        <label>Address:</label>
+                        <input type="text" name="address" />
+                    </div>
+                    <div>
+                        <label>Email:</label>
+                        <input type="text" name="email" />
+                    </div>
+                    <div>
+                        <input type="submit" value="Register" />
+                    </div>
+                </form>
+            </div>
+        );
+    }
+}
+
+// register package page with customer phone
+class RegisterPackage extends React.Component <any, any> {
+    
+    constructor(props: any) {
+        super(props);
+        this.state = {}
+        this.registerPackage = this.registerPackage.bind(this);
+    }
+
+    registerPackage(event) {
+        event.preventDefault();
+        let NewPackage = {
+            customerPhone: event.target.customerPhone.value,
+            id : event.target.id.value,
+            location_x: event.target.location_x.value,
+            location_y: event.target.location_y.value,
+            status: data.PackageStatus.pending,
+            priority: event.target.priority.value,
+            deliveryDate: event.target.delivDate.value
+        }
+
+        let request = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(NewPackage)
+        };
+
+        console.log(request);
+
+        fetch('/api/packages', request).then(res => res.json()).then(data => {
+            console.log(data);
+        }).catch(err => console.log(err));
+    }
+
+    render() {
+        return (
+            <div>
+                <h1 style={styles.h1Styles}>Register Package</h1>
+                <form onSubmit={this.registerPackage} style={styles.formStyle}>
+                    <div>
+                        <label>Customer Phone:</label>
+                        <input type="text" name="customerPhone" />
+                    </div>
+                    <div>
+                        <label>Package ID:</label>
+                        <input type="text" name="id" />
+                    </div>
+                    <div>
+                        <label>Location X:</label>
+                        <input type="text" name="location_x" />
+                    </div>
+                    <div>
+                        <label>Location Y:</label>
+                        <input type="text" name="location_y" />
+                    </div>
+                    <div>
+                        <label>Priority:</label>
+                        <select name="priority">
+                            <option value="Low">Low</option>
+                            <option value="Medium">Medium</option>
+                            <option value="High">High</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Delivery Date:</label>
+                        <input type="text" name="delivDate" />
+                    </div>
+                    <div>
+                        <input type="submit" value="Register" />
+                    </div>
+                </form>
+            </div>
+        );
+    }
+}
+
+
 // App Class
 class App extends React.Component {
     render() {
@@ -539,6 +898,10 @@ class App extends React.Component {
                         <li><Link to="/drivers-profiles">SDS Drivers</Link></li>
                         <li><Link to="/cars">Cars</Link></li>
                         <li><Link to="/driver-info">Driver Info</Link></li>
+                        <li><Link to="/register-driver">Register Driver</Link></li>
+                        <li><Link to="/register-car">Register Car</Link></li>
+                        <li><Link to="/register-customer">Register Customer</Link></li>
+                        <li><Link to="/register-package">Register Package</Link></li>
                     </ul>
                     <Route exact path="/" component={Home} />
                     <Route path="/car-driver-allocation" component={CarDriverAllocation} />
@@ -546,6 +909,10 @@ class App extends React.Component {
                     <Route path="/drivers-profiles" component={DriversProfiles} />
                     <Route path="/cars" component={Cars} />
                     <Route path="/driver-info" component={DriverInfo} />
+                    <Route path="/register-driver" component={RegisterDriver} />
+                    <Route path="/register-car" component={RegisterCar} />
+                    <Route path="/register-customer" component={RegisterCustomer} />
+                    <Route path="/register-package" component={RegisterPackage} />
                 </div>
             </HashRouter>
         );

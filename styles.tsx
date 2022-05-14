@@ -102,3 +102,19 @@ export const selectScreenStyle: CSS.Properties = {
     alignItems: 'center',
     justifyContent: 'center'
 }
+
+export const pStyles: CSS.Properties = {
+    fontSize: '1.5rem',
+    fontWeight: '400',
+    lineHeight: '1.5',
+    margin: 0,
+    padding: 0
+}
+
+export const buttonStyles: CSS.Properties = {
+    fontSize: '1.5rem',
+    fontWeight: '400',
+    lineHeight: '1.5',
+    margin: 0,
+    padding: 0
+}

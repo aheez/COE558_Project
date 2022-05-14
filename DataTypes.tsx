@@ -45,8 +45,8 @@ export type Car = {
 }
 
 export enum CarStatus {
-    Available = "Available",
-    Unavailable = "Unavailable"
+    available = "Available",
+    unavailable = "Unavailable"
 }
 
 export type Package = {
@@ -83,4 +83,19 @@ export type Warning = {
     severity: WarningSeverity;
     message: string;
     date: string;
+}
+
+export function convertWarnToEnum(str: string): WarningSeverity {
+    switch (str) {
+        case "Low":
+            return WarningSeverity.low;
+        case "Medium":
+            return WarningSeverity.medium;
+        case "High":
+            return WarningSeverity.high;
+        case "Critical":
+            return WarningSeverity.critical;
+        default:
+            return WarningSeverity.low;
+    }
 }
