@@ -23,11 +23,11 @@ class App extends React.Component {
                 <div>
                     <ul style={styles.navBarStyles}>
                         <li><Link to="/">Home</Link></li>
-                        <li><Link to="/car-driver-allocation">Car-Driver Allocation</Link></li>
-                        <li><Link to="/packages">Packages</Link></li>
-                        <li><Link to="/drivers-profiles">SDS Drivers</Link></li>
-                        <li><Link to="/cars">Cars</Link></li>
-                        <li><Link to="/driver-info">Driver Info</Link></li>
+                        {/* <li><Link to="/car-driver-allocation">Car-Driver Allocation</Link></li> */}
+                        {/* <li><Link to="/packages">Packages</Link></li> */}
+                        {/* <li><Link to="/drivers-profiles">SDS Drivers</Link></li> */}
+                        {/* <li><Link to="/cars">Cars</Link></li> */}
+                        {/* <li><Link to="/driver-info">Driver Info</Link></li> */}
                         <li><Link to="/register-driver">Register Driver</Link></li>
                         <li><Link to="/register-car">Register Car</Link></li>
                         <li><Link to="/register-package">Register Package</Link></li>

@@ -49,51 +49,57 @@ export class Home extends React.Component <any, any> {
     }
 
     render() {
-        if (this.state.length > 0) {
-            return (
-                <div>
-                    <h1 style={styles.h1Styles}>Home</h1>
-                    <h2 style={styles.h2Styles}>Warnings</h2>
-                    <h2 style={styles.h2Styles}>{this.state[0].message}</h2>
-                    <table style={styles.tableStyles}>
-                        <thead>
-                            <tr style={styles.trStyles}>
-                                <th>Severity</th>
-                                <th>Message</th>
-                                <th>Date</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {this.state.map((warning: data.Warning) => {
-                                return (
-                                    <tr style={styles.trStyles}>
-                                        <td>{warning.severity}</td>
-                                        <td>{warning.message}</td>
-                                        <td>{warning.date}</td>
-                                    </tr>
-                                )
-                            }
-                            )}
-                        </tbody>
-                    </table>
-                    <form style={styles.formStyle}>
-                        <button style={styles.buttonStyles} onClick={this.getWarning}>Get Warnings</button>
-                    </form>
-                </div>
-            );
-        } 
-        else {
-            console.log(this.state.length)
-            return (
-                <div>
-                    <h1 style={styles.h1Styles}>Home</h1>
-                    <h2 style={styles.h2Styles}>Warnings</h2>
-                    <p style={styles.pStyles}>No warnings found</p>
-                    <form style={styles.formStyle}>
-                        <button style={styles.buttonStyles} onClick={this.getWarning}>Get Warnings</button>
-                    </form>
-                </div>
-            );
-        }
+        // if (this.state.length > 0) {
+        //     return (
+        //         <div>
+        //             <h1 style={styles.h1Styles}>Home</h1>
+        //             <h2 style={styles.h2Styles}>Warnings</h2>
+        //             <h2 style={styles.h2Styles}>{this.state[0].message}</h2>
+        //             <table style={styles.tableStyles}>
+        //                 <thead>
+        //                     <tr style={styles.trStyles}>
+        //                         <th>Severity</th>
+        //                         <th>Message</th>
+        //                         <th>Date</th>
+        //                     </tr>
+        //                 </thead>
+        //                 <tbody>
+        //                     {this.state.map((warning: data.Warning) => {
+        //                         return (
+        //                             <tr style={styles.trStyles}>
+        //                                 <td>{warning.severity}</td>
+        //                                 <td>{warning.message}</td>
+        //                                 <td>{warning.date}</td>
+        //                             </tr>
+        //                         )
+        //                     }
+        //                     )}
+        //                 </tbody>
+        //             </table>
+        //             <form style={styles.formStyle}>
+        //                 <button style={styles.buttonStyles} onClick={this.getWarning}>Get Warnings</button>
+        //             </form>
+        //         </div>
+        //     );
+        // } 
+        // else {
+        //     console.log(this.state.length)
+        //     return (
+        //         <div>
+        //             <h1 style={styles.h1Styles}>Home</h1>
+        //             <h2 style={styles.h2Styles}>Warnings</h2>
+        //             <p style={styles.pStyles}>No warnings found</p>
+        //             <form style={styles.formStyle}>
+        //                 <button style={styles.buttonStyles} onClick={this.getWarning}>Get Warnings</button>
+        //             </form>
+        //         </div>
+        //     );
+        // }
+        return (
+            <div>
+                <h1 style={styles.h1Styles}>Welcome</h1>
+                <h2 style={styles.h2Styles}>This is the Home page</h2>
+            </div>
+        );
     }
 }

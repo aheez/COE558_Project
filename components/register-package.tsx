@@ -47,7 +47,7 @@ export class RegisterPackage extends React.Component <any, any> {
         return (
             <div>
                 <h1 style={styles.h1Styles}>Register Package and Customer</h1>
-                <form onSubmit={this.registerPackage}>
+                <form onSubmit={this.registerPackage} style={styles.formStyle}>
                     <div>
                         <h2 style={styles.h2Styles}>Package Informatio</h2>
                         <label>Package ID:</label>

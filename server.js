@@ -303,23 +303,14 @@ app.post('/api/warnings', (req, res) => {
 
 // get drivers
 app.get('/api/drivers', (req, res) => {
-    if (req.body.id) {
-        Driver.findOne({Id: req.body.id}, (err, data) => {
-            if (err) {
-                res.status(500).send(err);
-            } else {
-                res.send(data);
-            }
-        });
-    } else {
-        Driver.find({}, (err, data) => {
-            if (err) {
-                res.status(500).send(err);
-            } else {
-                res.send(data);
-            }
-        });
-    }
+
+    Driver.find({}, (err, data) => {
+        if (err) {
+            res.status(500).send(err);
+        } else {
+            res.send(data);
+        }
+    });
 });
 
 // register DriverCar
@@ -354,7 +345,7 @@ app.post('/api/drivers', (req, res) => {
         fname : req.body.fname,
         lname : req.body.lname,
         govID : req.body.govID,
-        Id : req.body.id,
+        Id : req.body.Id,
         phone : req.body.phone,
         age : req.body.age,
         address : req.body.address,
@@ -410,12 +401,14 @@ app.get('/api/cars', (req, res) => {
 app.post('/api/packages', (req, res) => {
     let package = new Package({
         id : req.body.id,
-        location_x : req.body.location_x,
-        location_y : req.body.location_y,
+        location : {
+            x: req.body.location_x,
+            y: req.body.location_y
+        },
         customer : {
-            fname : req.body.fname,
-            lname : req.body.lname,
-            phone : req.body.phone
+            fname : req.body.customer.fname,
+            lname : req.body.customer.lname,
+            phone : req.body.customer.phone
         },
         priority : req.body.priority,
         packageStatus : req.body.status
@@ -435,7 +428,7 @@ app.get('/api/packages', (req, res) => {
         if (err) {
             res.status(500).send(err);
         } else {
-            res.send(data);
+            res.json(data);
         }
     });
 });
